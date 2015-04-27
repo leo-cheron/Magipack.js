@@ -3,6 +3,7 @@
 import os, sys, getopt
 import re
 import json
+import mimetypes
 
 def listFiles(path):
 	if not path.endswith('/'): path += '/'
@@ -26,7 +27,7 @@ def packImages(files):
 		l = len(f)
 		if output == None: output = f
 		else: output = output + f
-		data.append([fn[1], p, p + l, fn[1][-3:]])
+		data.append([fn[1], p, p + l, mimetypes.guess_type(fn[1])[0] or ""])
 		p += l
 		c += 1
 
