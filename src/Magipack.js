@@ -11,11 +11,13 @@
  **/
 
  
-window.Magipack = (function() {
+window.Magipack = (function() 
+{
 	window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 	Magipack.isIE = Boolean(document.all);
 	var hasBlob = false;
-	try{
+	try
+	{
 		hasBlob = Boolean(Blob);
 	}catch(e)
 	{
@@ -42,10 +44,13 @@ window.Magipack = (function() {
 			'End Function';
 		document.childNodes[document.childNodes.length - 1].appendChild(s);
 
-		function GetIEByteArray_ByteStr(IEByteArray) {
+		function GetIEByteArray_ByteStr(IEByteArray) 
+		{
 			var ByteMapping = {};
-			for ( var i = 0; i < 256; i++ ) {
-				for ( var j = 0; j < 256; j++ ) {
+			for ( var i = 0; i < 256; i++ ) 
+			{
+				for ( var j = 0; j < 256; j++ ) 
+				{
 					ByteMapping[ String.fromCharCode( i + j * 256 ) ] = 
 						String.fromCharCode(i) + String.fromCharCode(j);
 				}
@@ -87,21 +92,21 @@ window.Magipack = (function() {
 		l = ret.length;
 		if(i == 1)
 		{
-			ret = ret.substr(0, l - 2) + "=="
+			ret = ret.substr(0, l - 2) + "==";
 		}else if(i == 2)
 		{
-			ret = ret.substr(0, l - 1) + "="
+			ret = ret.substr(0, l - 1) + "=";
 		}
 		return ret;
 	}
 	function req()
 	{
-		if(window.XMLHttpRequest) return new XMLHttpRequest()
-		if(window.ActiveXObject)return new ActiveXObject("MSXML2.XMLHTTP.3.0")
+		if(window.XMLHttpRequest) return new XMLHttpRequest();
+		if(window.ActiveXObject)return new ActiveXObject("MSXML2.XMLHTTP.3.0");
 	}
 
 	function Magipack(pack, config) {
-		this.progress = 0
+		this.progress = 0;
 		if(pack)
 		{
 			this.init(pack, config);
@@ -120,7 +125,7 @@ window.Magipack = (function() {
 		}
 		this.progress = p;
 		if(this.onProgress) this.onProgress(p, 1);
-	}
+	};
 
 	Magipack.prototype._loadFile = function(path, callback, type)
 	{
@@ -128,14 +133,14 @@ window.Magipack = (function() {
 		if(!type)
 		{
 			type = 'arraybuffer';
-			try{
+			try
+			{
 				if(Blob.prototype.slice)
 				{
 					type = 'blob';
 				}
 			}catch(e)
 			{
-
 			}
 		}
 
@@ -146,38 +151,41 @@ window.Magipack = (function() {
 		var _this = this;
 		xhr.onprogress = function(e)
 		{
-			_this._onProgress(e)
-		}
-		xhr.onreadystatechange = function(e) {
-			if (this.readyState == 4) {
+			_this._onProgress(e);
+		};
+		xhr.onreadystatechange = function(e) 
+		{
+			if (this.readyState == 4) 
+			{
 				if(_callback) _callback.call(_this, this);
 				this.onreadystatechange = null;
 			}
 		};
 
 		xhr.send(null);
-	}
+	};
 
 	Magipack.prototype._configLoaded = function(e)
 	{
 		this._configComplete = true;
 		this.config = eval('(' + e.responseText + ')');
 		this._loadFile(this.pack, this._packLoaded);
-	}
+	};
 
 	Magipack.prototype._packLoaded = function(e)
 	{
 		if(!Magipack.hasBlob)
 		{
 			this.init(e.responseBody, this.config);
-		}else{
+		}else
+		{
 			this.init(e.response, this.config);
 		}
 		if(this.onLoadComplete)
 		{
 			this.onLoadComplete(this);
 		}
-	}
+	};
 
 	Magipack.prototype._findFile = function(name)
 	{
@@ -190,25 +198,29 @@ window.Magipack = (function() {
 				return this.config[i];
 			}
 		}
-		while (i-- > 0) {
-			if (name.indexOf(this.config[i][0]) >= 0) {
+		while (i-- > 0) 
+		{
+			if (name.indexOf(this.config[i][0]) >= 0) 
+			{
 				return this.config[i];
 			}
 		}
-	}
+	};
 
 	Magipack.prototype._getRange = function(i, e, type)
 	{
-		if (!Magipack.hasBlob) {
+		if (!Magipack.hasBlob) 
+		{
 			if (Magipack.isIE)
 			{
 				return 'data:' + type + ';base64,' + b64encodeString(this.ieBlob.substr(i, e - i));
 			}
-		} else {
+		}else 
+		{
 			var b;
 			if(this.blob.slice)
 			{
-				b = this.blob.slice(i, e);
+				b = this.blob.slice(i, e, type);
 				return window.URL.createObjectURL(b);
 			}else if (this.blob.webkitSlice)
 			{
@@ -220,7 +232,7 @@ window.Magipack = (function() {
 				return window.URL.createObjectURL(b);
 			}
 		}
-	}
+	};
 
 	Magipack.prototype.init = function(pack, config)
 	{
@@ -230,11 +242,12 @@ window.Magipack = (function() {
 			if(!Magipack.hasBlob)
 			{
 				this.ieBlob = GetIEByteArray_ByteStr(pack);
-			}else{
-				this.blob = new Blob([pack])
+			}else
+			{
+				this.blob = new Blob([pack]);
 			}
 		}
-	}
+	};
 
 	Magipack.prototype.load = function(pack, config)
 	{
@@ -242,10 +255,11 @@ window.Magipack = (function() {
 		if(config)
 		{
 			this._loadFile(config, this._configLoaded, 'text');
-		}else{
+		}else
+		{
 			this._loadFile(pack, this._packLoaded);
 		}
-	}
+	};
 
 	Magipack.prototype.getURI = function()
 	{
@@ -267,9 +281,10 @@ window.Magipack = (function() {
 		if(!type) type = 'text/plain';
 
 		return this._getRange(file[1], file[2], type);
-	}
+	};
 
-	Magipack.init = function(pack, config) {
+	Magipack.init = function(pack, config) 
+	{
 		if(this.inited) throw new Error('Magipack static instance already initialized.');
 		this._instance = new Magipack(pack, config);
 		if(pack)
@@ -279,7 +294,8 @@ window.Magipack = (function() {
 		this.inited = true;
 	};
 
-	Magipack.load = function(pack, config) {
+	Magipack.load = function(pack, config) 
+	{
 		if(!this.inited) this.init();
 		this._instance.onLoadComplete = this.onLoadComplete;
 		this._instance.load(pack, config);
@@ -288,7 +304,7 @@ window.Magipack = (function() {
 	Magipack.getURI = function()
 	{
 		return this._instance.getURI.apply(this._instance, arguments);
-	}
+	};
 
 	return Magipack;
 
